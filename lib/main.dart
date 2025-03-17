@@ -47,7 +47,7 @@ class _MainAppState extends State<MainApp> {
                     decoration: InputDecoration(
                       fillColor: Colors.blueGrey.shade100,
                       filled: true,
-                      label: Text("Pesquisar"),
+                      labelText: "Pesquisar",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20),
                         borderSide: BorderSide.none,
