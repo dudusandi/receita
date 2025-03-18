@@ -33,10 +33,10 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       home: Builder(
         builder: (context) => Scaffold(
-          backgroundColor: Colors.grey.shade100,
+          backgroundColor: const Color.fromARGB(255, 255, 243, 243),
           appBar: AppBar(
-            title: Text("CookBook"),
-            backgroundColor: Colors.blue.shade50,
+            title: Text("CookBook",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
+            backgroundColor: const Color.fromARGB(255, 254, 192, 222),
           ),
           body: Center(
             child: Column(
@@ -45,7 +45,7 @@ class _MainAppState extends State<MainApp> {
                   padding: const EdgeInsets.all(20.0),
                   child: TextField(
                     decoration: InputDecoration(
-                      fillColor: Colors.blueGrey.shade100,
+                      fillColor: const Color.fromARGB(20, 0, 67, 250),
                       filled: true,
                       labelText: "Pesquisar",
                       border: OutlineInputBorder(
@@ -63,7 +63,7 @@ class _MainAppState extends State<MainApp> {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(
-                        color: Colors.blueGrey.shade100,
+                        color: Color.fromARGB(20, 0, 67, 250),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: DropdownButtonHideUnderline(
@@ -92,13 +92,14 @@ class _MainAppState extends State<MainApp> {
                     margin: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
-                      color: Colors.blueGrey.shade100,
+                      color: Color.fromARGB(20, 0, 67, 250),
                     ),
                   ),
                 ),
                 ElevatedButton(
+                  style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(60, 250, 0, 208),)),
                   onPressed: () => _mostrarPopupAdicionarReceita(context),
-                  child: Text("Adicionar Nova Receita"),
+                  child: Text("Adicionar Nova Receita", style: TextStyle(color: Colors.white),),
                 ),
                 SizedBox(height: 40),
               ],
