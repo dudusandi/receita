@@ -33,7 +33,7 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       home: Builder(
         builder: (context) => Scaffold(
-          backgroundColor: const Color.fromARGB(255, 255, 243, 243),
+          backgroundColor: const Color.fromARGB(255, 255, 251, 251),
           appBar: AppBar(
             title: Text("CookBook",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
             backgroundColor: const Color.fromARGB(255, 254, 192, 222),
@@ -131,7 +131,7 @@ class _MainAppState extends State<MainApp> {
                 SizedBox(height: 15),
                 TextField(
                   controller: _descricaoController,
-                  maxLines: 3,
+                  maxLines: 8,
                   decoration: InputDecoration(
                     labelText: 'Descrição',
                     border: OutlineInputBorder(
