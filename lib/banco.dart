@@ -1,18 +1,14 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-// Função para criar o banco de dados
 Future<Database> inicializarBancoDados() async {
-  // Obter o caminho para o diretório do banco de dados
   final caminhoBanco = await getDatabasesPath();
   final caminho = join(caminhoBanco, 'receitas.db');
 
-  // Abrir ou criar o banco de dados
   return openDatabase(
     caminho,
     version: 1,
     onCreate: (db, version) async {
-      // Criar a tabela de receitas
       await db.execute('''
         CREATE TABLE receitas(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
