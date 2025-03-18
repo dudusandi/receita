@@ -15,18 +15,19 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   String filtroSelecionado = "todas";
-
   final TextEditingController _tituloController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
   final TextEditingController _tempoPrepController = TextEditingController();
   final TextEditingController _tag = TextEditingController();
   final TextEditingController _categoria = TextEditingController();
+  final TextEditingController _pesquisaController = TextEditingController();
 
   @override
   void dispose() {
     _tituloController.dispose();
     _descricaoController.dispose();
     _tempoPrepController.dispose();
+    _pesquisaController.dispose();
     super.dispose();
   }
 
@@ -50,6 +51,7 @@ class _MainAppState extends State<MainApp> {
                     Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: TextField(
+                        controller: _pesquisaController,
                         decoration: InputDecoration(
                           fillColor: const Color.fromARGB(20, 0, 67, 250),
                           filled: true,
@@ -59,6 +61,9 @@ class _MainAppState extends State<MainApp> {
                             borderSide: BorderSide.none,
                           ),
                         ),
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
                     ),
                     Row(
@@ -203,7 +208,7 @@ class _MainAppState extends State<MainApp> {
                     ),
                     ElevatedButton(
                       style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll(
+                        backgroundColor: WidgetStateProperty.all(
                           Color.fromARGB(60, 250, 0, 208),
                         ),
                       ),
@@ -223,167 +228,175 @@ class _MainAppState extends State<MainApp> {
   }
 
   // Receitas baseado no filtro selecionado
-Future<List<Map<String, dynamic>>> _carregarReceitas() async {
-  String texto = '';
-  
-  switch (filtroSelecionado) {
-    case 'categoria':
-      return buscarReceitasPorCategoria(_categoria.text);
-    case 'tag':
-      return buscarReceitasPorTag(_tag.text);
-    case 'todas':
-    default:
-      if (texto.isNotEmpty) {
-        return buscarReceitasPorTexto(texto);
-      } else {
-        return buscarTodasReceitas();
-      }
-  }
-}
+  Future<List<Map<String, dynamic>>> _carregarReceitas() async {
+    String texto = _pesquisaController.text;
 
-// Mostrar os detalhes da receita
-void _mostrarDetalhesReceita(BuildContext context, Map<String, dynamic> receita) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(receita['titulo']),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Categoria: ${receita['categoria']}'),
-              SizedBox(height: 8),
-              Text('Tag: ${receita['tag']}'),
-              SizedBox(height: 8),
-              Text('Tempo de preparo: ${receita['tempoPreparo']} minutos'),
-              SizedBox(height: 16),
-              Text('Descrição:', style: TextStyle(fontWeight: FontWeight.bold)),
-              SizedBox(height: 8),
-              Text(receita['descricao']),
-            ],
+    switch (filtroSelecionado) {
+      case 'categoria':
+        return buscarReceitasPorCategoria(texto);
+      case 'tag':
+        return buscarReceitasPorTag(texto);
+      case 'todas':
+      default:
+        if (texto.isNotEmpty) {
+          return buscarReceitasPorTexto(texto);
+        } else {
+          return buscarTodasReceitas();
+        }
+    }
+  }
+
+  // Mostrar os detalhes da receita
+  void _mostrarDetalhesReceita(
+    BuildContext context,
+    Map<String, dynamic> receita,
+  ) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(receita['titulo']),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Categoria: ${receita['categoria']}'),
+                SizedBox(height: 8),
+                Text('Tag: ${receita['tag']}'),
+                SizedBox(height: 8),
+                Text('Tempo de preparo: ${receita['tempoPreparo']} minutos'),
+                SizedBox(height: 16),
+                Text(
+                  'Descrição:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(receita['descricao']),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Fechar'),
-          ),
-          TextButton(
-            onPressed: () {
-              excluirReceita(receita['id']);
-              Navigator.of(context).pop();
-              setState(() {});
-            },
-            child: Text('Excluir', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      );
-    },
-  );
-}
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {});
+              },
+              child: Text('Fechar'),
+            ),
+            TextButton(
+              onPressed: () {
+                excluirReceita(receita['id']);
+                Navigator.of(context).pop();
+                setState(() {});
+              },
+              child: Text('Excluir', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   // Popup para Adicionar uma Receita
   void _mostrarPopupAdicionarReceita(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Adicionar Nova Receita'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: _tituloController,
-                decoration: InputDecoration(
-                  labelText: 'Título da Receita',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Adicionar Nova Receita'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: _tituloController,
+                  decoration: InputDecoration(
+                    labelText: 'Título da Receita',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 15),
-              TextField(
-                controller: _descricaoController,
-                maxLines: 8,
-                decoration: InputDecoration(
-                  labelText: 'Descrição',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 15),
+                TextField(
+                  controller: _descricaoController,
+                  maxLines: 8,
+                  decoration: InputDecoration(
+                    labelText: 'Descrição',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 15),
-              TextField(
-                controller: _tempoPrepController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Tempo de Preparo (minutos)',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 15),
+                TextField(
+                  controller: _tempoPrepController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Tempo de Preparo (minutos)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 15),
-              TextField(
-                controller: _tag,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  labelText: 'Tag',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 15),
+                TextField(
+                  controller: _tag,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: 'Tag',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 15),
-              TextField(
-                controller: _categoria,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  labelText: 'Categoria',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 15),
+                TextField(
+                  controller: _categoria,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: 'Categoria',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              int tempoPreparo = int.tryParse(_tempoPrepController.text) ?? 0;
-              await adicionarReceita(
-                _tituloController.text,
-                _descricaoController.text,
-                tempoPreparo,
-                _tag.text,
-                _categoria.text
-              );
-              _tituloController.clear();
-              _descricaoController.clear();
-              _tempoPrepController.clear();
-              _tag.clear();
-              _categoria.clear();
-              Navigator.of(context).pop();
-              setState(() {
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Receita adicionada'))
-              );
-            },
-            child: Text('Salvar'),
-          ),
-        ],
-      );
-    },
-  );
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                int tempoPreparo = int.tryParse(_tempoPrepController.text) ?? 0;
+                await adicionarReceita(
+                  _tituloController.text,
+                  _descricaoController.text,
+                  tempoPreparo,
+                  _tag.text,
+                  _categoria.text,
+                );
+                _tituloController.clear();
+                _descricaoController.clear();
+                _tempoPrepController.clear();
+                _tag.clear();
+                _categoria.clear();
+                Navigator.of(context).pop();
+                setState(() {});
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Receita adicionada')));
+              },
+              child: Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

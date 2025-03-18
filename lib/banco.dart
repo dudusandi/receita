@@ -42,33 +42,33 @@ Future<int> adicionarReceita(String titulo, String descricao, int tempoPreparo, 
   return await db.insert('receitas', receita);
 }
 
-// Função para buscar todas as receitas
+// Buscar todas as receitas
 Future<List<Map<String, dynamic>>> buscarTodasReceitas() async {
   final db = await inicializarBancoDados();
   return await db.query('receitas');
 }
 
-// Função para buscar receitas por categoria
+// Buscar receitas por categoria
 Future<List<Map<String, dynamic>>> buscarReceitasPorCategoria(String categoria) async {
   final db = await inicializarBancoDados();
   return await db.query(
     'receitas',
-    where: 'categoria = ?',
-    whereArgs: [categoria]
+    where: 'categoria LIKE ?',
+    whereArgs: ['%$categoria%']
   );
 }
 
-// Função para buscar receitas por tag
+// Buscar receitas por tag
 Future<List<Map<String, dynamic>>> buscarReceitasPorTag(String tag) async {
   final db = await inicializarBancoDados();
   return await db.query(
     'receitas',
-    where: 'tag = ?',
-    whereArgs: [tag]
+    where: 'tag LIKE ?',
+    whereArgs: ['%$tag%']
   );
 }
 
-// Função para buscar receitas por texto no título ou descrição
+// Buscar receitas por texto em todos
 Future<List<Map<String, dynamic>>> buscarReceitasPorTexto(String texto) async {
   final db = await inicializarBancoDados();
   return await db.query(
@@ -78,7 +78,7 @@ Future<List<Map<String, dynamic>>> buscarReceitasPorTexto(String texto) async {
   );
 }
 
-// Função para atualizar uma receita
+// Atualizar uma receita
 Future<int> atualizarReceita(int id, String titulo, String descricao, int tempoPreparo, String tag, String categoria) async {
   final db = await inicializarBancoDados();
   
